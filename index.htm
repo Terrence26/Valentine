@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Be My Valentine 💖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ff758c, #ff7eb3);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #8b0000;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.3rem;
+      color: #600000;
+      margin-bottom: 25px;
+    }
+
+    .buttons {
+      position: relative;
+      height: 80px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    button {
+      font-size: 20px;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    #yes {
+      background: red;
+      color: white;
+    }
+
+    #no {
+      background: gray;
+      color: white;
+      position: absolute;
+      left: 160px;
+      top: 0;
+    }
+
+    #puppy {
+      display: none;
+      margin-top: 25px;
+      width: 220px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      p { font-size: 1.1rem; }
+      #puppy { width: 180px; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>💌 Will you be my Valentine?</h1>
+  <p>Hi <strong>Ana</strong>, please response pud uy xD ❤️</p>
+
+  <div class="buttons">
+    <button id="yes">Yes</button>
+    <button id="no">No</button>
+  </div>
+
+  <!-- Online image works on GitHub Pages -->
+  <img id="puppy" src="https://placedog.net/400/300" alt="Cute Puppy">
+
+  <canvas id="fireworks"></canvas>
+
+  <script>
+    const yesBtn = document.getElementById("yes");
+    const noBtn = document.getElementById("no");
+    const puppy = document.getElementById("puppy");
+
+    /* ---------- NO BUTTON RUNS AWAY + VIBRATION ---------- */
+    function moveNoButton() {
+      const padding = 10;
+      const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+      const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+      noBtn.style.left = Math.random() * maxX + "px";
+      noBtn.style.top = Math.random() * maxY + "px";
+
+      if (navigator.vibrate) {
+        navigator.vibrate([100, 50, 100]);
+      }
+    }
+
+    noBtn.addEventListener("mouseenter", moveNoButton); // PC
+    noBtn.addEventListener("touchstart", (e) => {       // Mobile
+      e.preventDefault();
+      moveNoButton();
+    });
+
+    /* ---------- HEART FIREWORKS ---------- */
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    let hearts = [];
+
+    function spawnHearts(x, y) {
+      for (let i = 0; i < 30; i++) {
+        hearts.push({
+          x, y,
+          angle: Math.random() * Math.PI * 2,
+          speed: Math.random() * 4 + 2,
+          life: 100,
+          color: `hsl(${Math.random() * 360},100%,65%)`
+        });
+      }
+    }
+
+    function drawHeart(x, y, color) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.bezierCurveTo(x - 10, y - 10, x - 25, y + 10, x, y + 25);
+      ctx.bezierCurveTo(x + 25, y + 10, x + 10, y - 10, x, y);
+      ctx.fill();
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hearts.forEach((h, i) => {
+        h.x += Math.cos(h.angle) * h.speed;
+        h.y += Math.sin(h.angle) * h.speed;
+        h.life--;
+        drawHeart(h.x, h.y, h.color);
+        if (h.life <= 0) hearts.splice(i, 1);
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    /* ---------- YES BUTTON ---------- */
+    yesBtn.addEventListener("click", () => {
+      alert("Yay! ❤️ I knew you'd say yes!");
+      puppy.style.display = "block";
+
+      for (let i = 0; i < 5; i++) {
+        spawnHearts(
+          Math.random() * canvas.width,
+          Math.random() * canvas.height / 2
+        );
+      }
+    });
+  </script>
+
+</body>
+</html>
