@@ -4,14 +4,13 @@
   <meta charset="UTF-8">
   <title>Be My Valentine 💖</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #ff758c, #ff7eb3);
       height: 100vh;
-      overflow: hidden;
+      overflow: hidden; 
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -45,11 +44,14 @@
       border: none;
       border-radius: 12px;
       cursor: pointer;
+      transition: left 0.2s ease, top 0.2s ease;
     }
 
     #yes {
       background: red;
       color: white;
+      position: relative;
+      z-index: 1;
     }
 
     #no {
@@ -68,6 +70,14 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     }
 
+    #safeLink {
+      margin-top: 20px;
+      font-size: 1rem;
+      color: #600000;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
     canvas {
       position: fixed;
       inset: 0;
@@ -83,48 +93,31 @@
 </head>
 <body>
 
-  <h1>💌 Will you be my Valentine?</h1>
-  <p>Hi <strong>Ana</strong>, please response pud uy xD ❤️</p>
+  <h1>💌 Will you be my Valentine? 💌</h1>
+  <p>Hi <strong>Ana</strong>, please response pud uy haha ❤️</p>
 
   <div class="buttons">
     <button id="yes">Yes</button>
     <button id="no">No</button>
   </div>
 
-  <!-- Online image works on GitHub Pages -->
-  <img id="puppy" src="https://placedog.net/400/300" alt="Cute Puppy">
+  <!-- Smiling puppy image -->
+  <img id="puppy" src="kilig.jpeg" alt="Cute Smiling Puppy">
 
   <canvas id="fireworks"></canvas>
+
+  <!-- Safe link copy -->
+  <p id="safeLink">🔒 Safe Link 💖 (click to copy)</p>
 
   <script>
     const yesBtn = document.getElementById("yes");
     const noBtn = document.getElementById("no");
     const puppy = document.getElementById("puppy");
-
-    /* ---------- NO BUTTON RUNS AWAY + VIBRATION ---------- */
-    function moveNoButton() {
-      const padding = 10;
-      const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-      const maxY = window.innerHeight - noBtn.offsetHeight - padding;
-
-      noBtn.style.left = Math.random() * maxX + "px";
-      noBtn.style.top = Math.random() * maxY + "px";
-
-      if (navigator.vibrate) {
-        navigator.vibrate([100, 50, 100]);
-      }
-    }
-
-    noBtn.addEventListener("mouseenter", moveNoButton); // PC
-    noBtn.addEventListener("touchstart", (e) => {       // Mobile
-      e.preventDefault();
-      moveNoButton();
-    });
-
-    /* ---------- HEART FIREWORKS ---------- */
     const canvas = document.getElementById("fireworks");
     const ctx = canvas.getContext("2d");
+    const safeLink = document.getElementById("safeLink");
 
+    // ---------- Resize canvas ----------
     function resizeCanvas() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -132,8 +125,8 @@
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
+    // ---------- Heart fireworks ----------
     let hearts = [];
-
     function spawnHearts(x, y) {
       for (let i = 0; i < 30; i++) {
         hearts.push({
@@ -141,7 +134,7 @@
           angle: Math.random() * Math.PI * 2,
           speed: Math.random() * 4 + 2,
           life: 100,
-          color: `hsl(${Math.random() * 360},100%,65%)`
+          color: `hsl(${Math.random()*360},100%,65%)`
         });
       }
     }
@@ -150,37 +143,64 @@
       ctx.fillStyle = color;
       ctx.beginPath();
       ctx.moveTo(x, y);
-      ctx.bezierCurveTo(x - 10, y - 10, x - 25, y + 10, x, y + 25);
-      ctx.bezierCurveTo(x + 25, y + 10, x + 10, y - 10, x, y);
+      ctx.bezierCurveTo(x-10,y-10,x-25,y+10,x,y+25);
+      ctx.bezierCurveTo(x+25,y+10,x+10,y-10,x,y);
       ctx.fill();
     }
 
     function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      hearts.forEach((h, i) => {
-        h.x += Math.cos(h.angle) * h.speed;
-        h.y += Math.sin(h.angle) * h.speed;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      hearts.forEach((h,i)=>{
+        h.x += Math.cos(h.angle)*h.speed;
+        h.y += Math.sin(h.angle)*h.speed;
         h.life--;
-        drawHeart(h.x, h.y, h.color);
-        if (h.life <= 0) hearts.splice(i, 1);
+        drawHeart(h.x,h.y,h.color);
+        if(h.life<=0) hearts.splice(i,1);
       });
       requestAnimationFrame(animate);
     }
     animate();
 
-    /* ---------- YES BUTTON ---------- */
-    yesBtn.addEventListener("click", () => {
+    // ---------- NO button ----------
+    function moveNoButton() {
+      const btnWidth = noBtn.offsetWidth;
+      const btnHeight = noBtn.offsetHeight;
+
+      const maxX = window.innerWidth - btnWidth - 10;
+      const maxY = window.innerHeight - btnHeight - 10;
+
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+
+      if (navigator.vibrate) navigator.vibrate([80,40,80]);
+    }
+
+    noBtn.addEventListener("mouseover", moveNoButton); // desktop
+    noBtn.addEventListener("touchstart", e=>{ e.preventDefault(); moveNoButton(); }); // mobile
+
+    // ---------- YES button ----------
+    yesBtn.addEventListener("click", ()=>{
       alert("Yay! ❤️ I knew you'd say yes!");
       puppy.style.display = "block";
-
-      for (let i = 0; i < 5; i++) {
+      for(let i=0;i<5;i++){
         spawnHearts(
-          Math.random() * canvas.width,
-          Math.random() * canvas.height / 2
+          Math.random()*canvas.width,
+          Math.random()*canvas.height/2
         );
       }
+    });
+
+    // ---------- Safe link copy ----------
+    safeLink.addEventListener("click", ()=>{
+      navigator.clipboard.writeText(window.location.href)
+        .then(()=> alert("Link copied! 💖 You can send it safely."))
+        .catch(()=> alert("Copy failed 😢"));
     });
   </script>
 
 </body>
 </html>
+
